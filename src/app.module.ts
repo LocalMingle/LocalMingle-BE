@@ -9,6 +9,7 @@ import { DataModule } from './data/data.module';
 import { SearchesModule } from './searches/searches.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AppService } from './app.service';
     MailModule,
     DataModule,
     SearchesModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

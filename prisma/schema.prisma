@@ -24,6 +24,8 @@ model User {
   HostEvents    HostEvent[]
   GuestEvents   GuestEvent[]
   EventBookmark EventBookmark[]
+  Notifications Notifications[]
+
 
   @@map("User")
 }
@@ -71,6 +73,7 @@ model Event {
   Category      Category[]
   RsvpLog       RsvpLog[]
   EventBookmark EventBookmark[]
+  Notifications Notifications[]
 
   @@map("Event")
 }
@@ -151,4 +154,16 @@ model Region {
   RegionId Int    @id @default(autoincrement())
   doName   String
   guName   String
+}
+
+model Notifications {
+  notificationId   Int      @id @default(autoincrement()) @map("id")
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  EventId   Int? // Foreign Key
+  UserId    Int? // Foreign Key // receiverId
+
+  Event Event? @relation(fields: [EventId], references: [eventId], onDelete: Cascade)
+  User  User?  @relation(fields: [UserId], references: [userId], onDelete: Cascade)
 }
