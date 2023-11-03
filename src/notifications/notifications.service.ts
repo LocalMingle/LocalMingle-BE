@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class NotificationsService {
   constructor(private readonly prisma: PrismaService) {}
-  private logger = new Logger('AppService');
+  private logger = new Logger('notifications.service.ts');
 
   // 1. 호스트가 만든 이벤트에 게스트 유저가 참가신청 시 알림을 받음
   async userJoinEventNotification(eventId: number, userId: number) {

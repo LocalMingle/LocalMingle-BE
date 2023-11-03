@@ -11,25 +11,33 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-// import { ItemNotifDto } from './dto/item-notification.dto';
 import { NotificationsService } from './notifications.service';
 
-@WebSocketGateway({ namespace: '/notification' })
+@WebSocketGateway(3001, { namespace: 'notifications' })
 export class NotificationsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly notificationsService: NotificationsService) {}
   private logger = new Logger('Notification');
 
-  @WebSocketServer() public server: Server;
+  @WebSocketServer() server: Server;
 
   afterInit() {
     this.logger.log('socket Init');
   }
+  // // client와 연결이 되었을 때
+  // async handleConnection(@ConnectedSocket() socket: Socket) {
+  //   this.logger.log(`connected: ${socket.id}`);
+  //   console.log('here');
+  // }
+
+  // 클라이언트와의 연결이 수립될 때 실행됩니다.
   handleConnection(@ConnectedSocket() socket: Socket) {
-    this.logger.log(`connected: ${socket.id}`);
+    this.logger.log(`connected : ${socket.id} ${socket.nsp.name}`);
   }
-  handleDisconnect(@ConnectedSocket() socket: Socket) {
+
+  // client와 연결이 끊길 때
+  async handleDisconnect(@ConnectedSocket() socket: Socket) {
     this.logger.log(`disconnected: ${socket.id}`);
     const userId = Object.keys(this.clients).find(
       (key) => this.clients[key] === socket.id
@@ -47,6 +55,12 @@ export class NotificationsGateway
     console.log('after login: ', this.clients);
   }
 
+  @SubscribeMessage('tests')
+  handleTest(@MessageBody('id') id: number): number {
+    console.log('id: ', id);
+    return id;
+  }
+
   // 1. 유저가 참가 신청
   @SubscribeMessage('joinEvent')
   async joinEvent(@MessageBody() data: any, @ConnectedSocket() socket: Socket) {
@@ -58,23 +72,9 @@ export class NotificationsGateway
         data.eventId,
         data.userId
       );
-    console.log('joinedEvent: ', joinedEvent);
-
-    // 해당 이벤트의 호스트에게 알람 emit
-    // const findHostId: any = await this.notificationsService.findHostId(
-    //   data.eventId
-    // );
-    // console.log('findHostId: ', findHostId);
+    console.log('joinedEvent:  ', joinedEvent);
 
     const hostSocketId = this.clients[joinedEvent.UserId];
     socket.to(hostSocketId).emit('onNotification', joinedEvent);
   }
 }
-
-// 여기에서 notification을 구현할거야
-// 1. 유저가 내가 만든 이벤트에 다른 유저가 참가신청 시 알림을 받음
-// 유저가 내가 만든 이벤트에 참가 신청했던 유저가 참가신청을 취소 시 알림을 받음
-// 유저가 내가 참가 신청한 이벤트의 승인을 받으면 알림을 받음
-// 유저가 내가 참가 신청한 이벤트의 거절을 받으면 알림을 받음
-// 메시지를 받으면 알림을 받음
-// }
