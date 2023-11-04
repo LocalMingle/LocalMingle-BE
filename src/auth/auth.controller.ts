@@ -48,6 +48,8 @@ export class AuthController {
       password,
       res,
     });
+    console.log("로그인 안되는 사람", accessToken)
+    console.log("로그인 안되는 사람", refreshToken)
     res.header('accessToken', accessToken);
     res.header('refreshToken', refreshToken);
     res.status(200).json({ userId });

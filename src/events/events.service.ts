@@ -6,15 +6,10 @@ import {
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
-import { Redis } from 'ioredis';
 
 @Injectable()
 export class EventsService {
-  constructor(
-    @InjectRedis() private readonly redis: Redis,
-    private prisma: PrismaService
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   // 1. 이벤트 생성
   async create(userId: number, createEventDto: CreateEventDto) {
@@ -41,40 +36,32 @@ export class EventsService {
   }
 
   // 2. 이벤트 전체 조회
-  async findAll() {
-    const redisEvents = await this.redis.get('events');
-    const cachedEvents = redisEvents ? JSON.parse(redisEvents) : null;
-    if (cachedEvents) {
-      return cachedEvents;
-    } else {
-      const events = await this.prisma.event.findMany({
-        where: {
-          isDeleted: false,
-        },
-        include: {
-          HostEvents: {
-            select: {
-              User: {
-                select: {
-                  UserDetail: true,
-                },
+  findAll() {
+    return this.prisma.event.findMany({
+      where: {
+        isDeleted: false,
+      },
+      include: {
+        HostEvents: {
+          select: {
+            User: {
+              select: {
+                UserDetail: true,
               },
             },
           },
-          GuestEvents: true,
-          _count: {
-            select: {
-              Viewlogs: true,
-            },
+        },
+        GuestEvents: true,
+        _count: {
+          select: {
+            Viewlogs: true,
           },
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-      await this.redis.set('events', JSON.stringify(events));
-      return events;
-    }
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   // 3. 이벤트 상세 조회
@@ -236,7 +223,7 @@ export class EventsService {
       },
     });
 
-    // console.log('removeBookmark:', lastEventInTable);
+    console.log('removeBookmark:', lastEventInTable);
     if (!lastEventInTable) {
       throw new NotFoundException('해당 북마크를 찾을 수 없습니다.');
     }
