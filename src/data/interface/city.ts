@@ -2,7 +2,7 @@ export const city = [
   {
     lang: 'ko',
     items: [
-      { doName: '시 / 도'},
+      { doName: '시 / 도' },
       { doName: '서울특별시' },
       { doName: '부산광역시' },
       { doName: '대구광역시' },
@@ -25,7 +25,7 @@ export const city = [
   {
     lang: 'jp',
     items: [
-      { doName: "市 / 道"},
+      { doName: '市 / 道' },
       { doName: 'ソウル特別市' },
       { doName: '釜山広域市' },
       { doName: '大邱広域市' },
@@ -48,7 +48,7 @@ export const city = [
   {
     lang: 'en',
     items: [
-      { doName: 'City / Province'},
+      { doName: 'City / Province' },
       { doName: 'Seoul' },
       { doName: 'Busan' },
       { doName: 'Daegu' },
@@ -71,6 +71,6 @@ export const city = [
 ];
 
 export const filter = {
-  category: ['선택','☕맛집/커피', '🏃‍♂️운동/건강', '🐾애완동물', '📕공부/교육'],
-  verify: ['선택','🙋‍♀️아무나', '🏡동네만'],
+  category: ['선택', '☕맛집/커피', '🏃‍♂️운동/건강', '🐾애완동물', '📕공부/교육'],
+  verify: ['선택', '🙋‍♀️아무나', '🏡동네만'],
 };

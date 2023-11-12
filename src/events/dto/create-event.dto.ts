@@ -10,7 +10,7 @@ import {
   Max,
 } from 'class-validator';
 
-export class CreateEventDto  {
+export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
