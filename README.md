@@ -3,7 +3,6 @@
 
 > 로컬밍글은 소셜 커뮤니티 서비스입니다.</br>
 쉽고 빠르게 함께 할 수 있는 활동을 만들고 참여해보세요!
-
 </br>
 
 <table width="80%;">
@@ -32,7 +31,6 @@
     <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.figma.com/file/Dq3pVmdUxnjMHvXaMZOUr8/%ED%95%AD%ED%95%B499-%EC%9E%91%EC%97%85?type=design&node-id=0-1&mode=design&t=LUqRgNyDtMIs1wkf-0">Figma</a></td>
   </tr>
 </table>
-
 </br>
 <br>
 
