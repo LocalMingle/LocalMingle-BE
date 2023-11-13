@@ -3,6 +3,9 @@
 <br>
 <br>
 ## 👥 참가한 사람들
+
+![Project Logo](images/catheeyong.jpg)
+
 <table>
   <tr>
     <th style="width: 300px;">이름</th>
