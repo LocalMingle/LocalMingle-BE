@@ -27,7 +27,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     SearchesModule,
     CacheModule.register({
       isGlobal:true,
-      til: 60,
+      til: 60000,
       max: 100
     })
   ],
