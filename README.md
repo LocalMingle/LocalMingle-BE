@@ -61,7 +61,7 @@
   <td><a href="https://www.behance.net/289871a1">박상현의<br>블로그</a></td>
 </tr>
 </table>
-<br><br>
+<br>
 
 ## 🔎 주요 기능
 
