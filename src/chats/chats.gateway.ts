@@ -58,21 +58,20 @@ export class ChatsGateway
     });
   }
   // WebSocketGateway가 초기화될 때 실행되는 메소드
-  // WebSocketGateway가 초기화되면 로그를 출력합니다.
   afterInit() {
     this.logger.log('init');
   }
 
   async handleDisconnect(@ConnectedSocket() socket: Socket) {
     const user = await this.socketModel.findOne({ socketId: socket.id });
-    console.log('연결해제 유저 확인', user);
-    console.log('연결해제 소켓 아이디', socket.id);
+    // console.log('연결해제 유저 확인', user);
+    // console.log('연결해제 소켓 아이디', socket.id);
     if (user) {
       socket.broadcast.emit('disconnect_user', user);
       await user.deleteOne();
       // 유저 리스트에서 해당 유저 삭제
       this.userList = this.userList.filter((u) => u.userId !== user.userId); // 수정된 부분
-      console.log('연결 해제 유저리스트 ', this.userList);
+      // console.log('연결 해제 유저리스트 ', this.userList);
       socket.broadcast.emit('userList', this.userList);
     }
     this.logger.log(
@@ -81,10 +80,11 @@ export class ChatsGateway
   }
 
   // 클라이언트가 연결되면 해당 클라이언트의 ID와 네임스페이스 정보를 로그에 출력
-  async handleConnection(@ConnectedSocket() socket: Socket) {
+  handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`connected : ${socket.id} ${socket.nsp.name}`);
-    // await this.logger.log(`connected : ${socket.id} ${socket.nsp.name}`);
   }
+
+  //채팅방 접속시
   @SubscribeMessage('join_room')
   async handleJoinRoom(
     @MessageBody()
@@ -129,7 +129,7 @@ export class ChatsGateway
       socket.emit('chat_history', chatHistory);
       // 방에 있는 모든 사용자에게 userList 전송
       this.server.to(String(payload.roomId)).emit('user_connected', payload);
-      console.log('유저리스트 콘솔', this.userList);
+      // console.log('유저리스트 콘솔', this.userList);
       this.server.to(String(payload.roomId)).emit('userList', this.userList);
     }
   }
@@ -168,11 +168,9 @@ export class ChatsGateway
         profileImg: profileImg,
       },
     ];
-    // const userList = await this.socketModel.find({ nickname: { $in: [nickname] } });
     // MongoDB에 채팅 메시지 저장
     await this.chattingModel.create({
       userList: userList,
-      // user: socketObj,
       nickname: messageData.nickname,
       profileImg: messageData.profileImg,
       roomId: messageData.roomId,

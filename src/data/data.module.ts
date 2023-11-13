@@ -6,6 +6,6 @@ import { DataController } from './data.controller';
 @Module({
   controllers: [DataController],
   providers: [DataService],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
 })
 export class DataModule {}

@@ -1,18 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DataService } from './data.service';
 
 describe('DataService', () => {
-  let service: DataService;
+  let dataService;
+  let mockPrisma;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [DataService],
-    }).compile();
-
-    service = module.get<DataService>(DataService);
+    mockPrisma = {
+      region: {
+        findMany: jest.fn(),
+      },
+    };
+    dataService = new DataService(mockPrisma);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  test('guNameData Method', async () => {
+    const query = { doName: 'exampleDoName' };
+    await dataService.guNameData(query);
+
+    expect(mockPrisma.region.findMany).toHaveBeenCalledWith({
+      where: { doName: query.doName },
+      select: { guName: true },
+    });
   });
 });
