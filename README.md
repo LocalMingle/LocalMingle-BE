@@ -13,7 +13,7 @@
   </tr>
   <tr>
     <td>장소영</td>
-    <td>FE</td>
+    <td style="text-align: center;">FE</td>
     <td>팀 부리더<br>메인페이지(카드뷰, 게시글 검색, 게시글 샐랙터 필터링, 인피니티 스크롤),<br>게시글 작성 및 수정, 1차 개발 범위에 대한 전체화면 퍼블리싱,<br>프론트 gitHub 관리, Figma 관리</td>
     <td><a href="https://github.com/ddoddiworld">장소영의<br>GitHub</a></td>
     <td><a href="https://velog.io/@ddoddiworld">장소영의<br>블로그</a></td>
