@@ -17,7 +17,6 @@ export const jwtSecret = process.env.JWT_SECRET;
   controllers: [AuthController],
   providers: [
     AuthService,
-    AuthService,
     UsersService,
     JwtAccessStrategy,
     JwtKakaoStrategy,
