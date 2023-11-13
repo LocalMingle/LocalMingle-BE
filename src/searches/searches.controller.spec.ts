@@ -1,20 +1,40 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { SearchesController } from './searches.controller';
-import { SearchesService } from './searches.service';
+import { SearchesDto } from './searches.dto/searches.dto';
 
 describe('SearchesController', () => {
-  let controller: SearchesController;
+  let searchesController
+  let mockSearchesService
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [SearchesController],
-      providers: [SearchesService],
-    }).compile();
-
-    controller = module.get<SearchesController>(SearchesController);
+    mockSearchesService = {
+      search: jest.fn()
+    }
+    searchesController = new SearchesController(mockSearchesService)
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
+  test('search Method', async () =>{
+    const sampleEvents = [
+      {
+        eventId: 1,
+        eventName: "Developer",
+        content: "안녕하세요",
+        createdAt: "2023-08-25T03:43:20",
+        updatedAt: "2023-08-25T03:43:20",
+      },
+      {
+        eventId: 2,
+        eventName: "Developer",
+        content: "안녕하세요",
+        createdAt: "2023-08-26T03:43:20",
+        updatedAt: "2023-08-26T03:43:20",
+      },
+    ];
+
+    mockSearchesService.search.mockReturnValue(sampleEvents)
+    const searchDto = SearchesDto
+
+    await searchesController.searchBy(1, searchDto)
+
+    expect(mockSearchesService.search).toHaveBeenCalledTimes(1)
+  })
 });
