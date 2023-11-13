@@ -10,11 +10,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { ChatsService } from './chats.service';
-import { IMessage, IuserInfo } from './interfaces/chats.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chatting } from './models/chattings.model';
+import { Socket as SocketModel } from './models/sockets.model'; // 소켓 모델 추가
+import * as Cron from 'node-cron'; // cron 패키지로부터 임포트
 
 @WebSocketGateway({
   namespace: 'chattings',
@@ -37,57 +37,145 @@ export class ChatsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('chat');
+  private logger = new Logger('chat');
 
-  //의존성 주입
-  @InjectModel(Chatting.name) private readonly chattingModel: Model<Chatting>;
-  constructor(private readonly chatsService: ChatsService) {}
+  private userList: Array<{
+    nickname: string;
+    profileImg: string;
+    userId: number;
+  }> = [];
 
-  //유저가 연결 되었을때 기존은 socket: Socket
-  handleConnection(@ConnectedSocket() socket: Socket) {
-    this.logger.log(`Client connected: ${socket.id}`);
+  constructor(
+    @InjectModel(Chatting.name) private readonly chattingModel: Model<Chatting>,
+    @InjectModel(SocketModel.name) // 변경된 모델
+    private readonly socketModel: Model<SocketModel> // 변경된 모델
+  ) {
+    this.logger.log('constructor');
+
+    // 스케줄러를 시작합니다.
+    Cron.schedule('0 0 */3 * * *', () => {
+      this.deleteOldChats();
+    });
+  }
+  // WebSocketGateway가 초기화될 때 실행되는 메소드
+  afterInit() {
+    this.logger.log('init');
   }
 
-  //유저가 연결해제 되었을때 로직
-  handleDisconnect(@ConnectedSocket() socket: Socket) {
-    this.logger.log(`disconnected: ${socket.id}`);
-    this.chatsService.leaveRoom(socket, this.server);
+  async handleDisconnect(@ConnectedSocket() socket: Socket) {
+    const user = await this.socketModel.findOne({ socketId: socket.id });
+    // console.log('연결해제 유저 확인', user);
+    // console.log('연결해제 소켓 아이디', socket.id);
+    if (user) {
+      socket.broadcast.emit('disconnect_user', user);
+      await user.deleteOne();
+      // 유저 리스트에서 해당 유저 삭제
+      this.userList = this.userList.filter((u) => u.userId !== user.userId); // 수정된 부분
+      // console.log('연결 해제 유저리스트 ', this.userList);
+      socket.broadcast.emit('userList', this.userList);
+    }
+    this.logger.log(
+      `disconnected : ${socket.id} ${socket.nsp.name} 연결히 해제되었습니다.`
+    );
+  }
+
+  // 클라이언트가 연결되면 해당 클라이언트의 ID와 네임스페이스 정보를 로그에 출력
+  handleConnection(@ConnectedSocket() socket: Socket) {
+    this.logger.log(`connected : ${socket.id} ${socket.nsp.name}`);
+  }
+
+  //채팅방 접속시
+  @SubscribeMessage('join_room')
+  async handleJoinRoom(
+    @MessageBody()
+    payload: {
+      nickname: string;
+      roomId: number;
+      profileImg: string;
+      userId: number;
+    },
+    @ConnectedSocket() socket: Socket
+  ) {
+    const isUserAlreadyInList = this.userList.some(
+      (user) => user.userId === payload.userId
+    );
+
+    if (!isUserAlreadyInList) {
+      socket.join(String(payload.roomId));
+      this.logger.log(
+        `Joined room: ${payload.roomId}, Nickname: ${payload.nickname}`
+      );
+
+      // MongoDB의 socketModel에 사용자 정보 저장
+      await this.socketModel.create({
+        socketId: socket.id,
+        nickname: payload.nickname,
+        roomId: payload.roomId,
+        profileImg: payload.profileImg,
+        userId: payload.userId,
+      });
+
+      // 이전 채팅 내용을 불러옵니다.
+      const chatHistory = await this.getChatHistory(payload.roomId);
+
+      // userList에 사용자 정보 추가
+      this.userList.push({
+        nickname: payload.nickname,
+        profileImg: payload.profileImg,
+        userId: payload.userId,
+      });
+
+      // 이전 채팅 내용과 함께 사용자 정보를 클라이언트에게 전송합니다.
+      socket.emit('chat_history', chatHistory);
+      // 방에 있는 모든 사용자에게 userList 전송
+      this.server.to(String(payload.roomId)).emit('user_connected', payload);
+      // console.log('유저리스트 콘솔', this.userList);
+      this.server.to(String(payload.roomId)).emit('userList', this.userList);
+    }
+  }
+
+  // 방에서 적었던 채팅 내용을 불러오는 매서드
+  async getChatHistory(roomId: number) {
+    const chatHistory = await this.chattingModel.find({ roomId }).exec();
+    return chatHistory;
   }
 
   // 클라이언트가 'submit_chat' 메시지를 보낼 때 실행되는 메소드 (채팅을하고 그걸 다른유저에게 브로드캐스팅)
   @SubscribeMessage('submit_chat')
   async handleSubmitChat(
-    @MessageBody() messageData: IMessage,
-    @ConnectedSocket() socket: Socket
-  ): Promise<void> {
-    const userId = messageData.userId;
-    const { roomId, nickname, profileImg, message, time } = messageData;
-    // 이 메서드에서 userList를 사용자 정보 배열로 처리하고 MongoDB에 저장하는 방식을 변경해야 합니다.
-    const user = {
-      socketId: socket.id,
-      userId: userId,
-      nickname: nickname,
-      profileImg: profileImg,
-      roomId: roomId,
-    };
-    // MongoDB에 채팅 메시지 저장
-    // user 정보를 userList 배열에 추가
-    await this.chattingModel.create({
-      userList: [user],
-      time: time,
-      message: message,
-      created: new Date(),
-    });
+    @MessageBody()
+    messageData: {
+      message: string;
+      nickname: string;
+      profileImg: string;
+      time: string;
+      roomId: number;
+      userId: number;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    @ConnectedSocket() _socket: Socket
+  ) {
+    this.logger.log(
+      `New chat in room ${messageData.roomId}: ${messageData.message}`
+    );
 
+    // const socketObj = await this.socketModel.findOne({ id: _socket.id });
+    const { nickname, profileImg, userId } = messageData;
+    const userList = [
+      {
+        userId: userId,
+        nickname: nickname,
+        profileImg: profileImg,
+      },
+    ];
     // MongoDB에 채팅 메시지 저장
     await this.chattingModel.create({
-      //userList, // 메세지를보낸 소켓 정보
-      nickname: messageData.nickname, //메세지를 보낸 사용자의 닉네임
-      profileImg: messageData.profileImg, //메세지를 보낸 사용자의 프로필 이미지
-      roomId: messageData.roomId, // 채팅이 속한 방의 ID
-      time: messageData.time, // 메세지를 송신한 시간
-      message: messageData.message, // 실제 채팅 메시지 내용.
-      created: new Date(), // 채팅 생성 시간 기록
+      userList: userList,
+      nickname: messageData.nickname,
+      profileImg: messageData.profileImg,
+      roomId: messageData.roomId,
+      time: messageData.time,
+      chat: messageData.message, // 수정: messageData.message를 사용하여 채팅 저장
     });
 
     this.logger.log(messageData);
@@ -102,68 +190,5 @@ export class ChatsGateway
     chatScheduler.setHours(chatScheduler.getHours() - 72); // 72시간
     // chatScheduler.setMinutes(chatScheduler.getMinutes() - 2); // 4320분(3일) 테스트 2분
     await this.chattingModel.deleteMany({ created: { $lt: chatScheduler } });
-  }
-
-  // 유저가 방에 참석할때
-  @SubscribeMessage('join_room') // 조인룸으로 태현님이 보내면 받는 on
-  async handleJoinRoom(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() { nickname, roomId, profileImg, userId }: IuserInfo
-  ): Promise<void> {
-    // 이전 채팅 내용을 불러옵니다.
-    const chatHistory = await this.chatsService.getChatHistory(roomId);
-
-    // 이전 채팅 내용과 함께 사용자 정보를 클라이언트에게 전송합니다.
-    socket.emit('chat_history', chatHistory);
-
-    const userList = {
-      nickname,
-      roomId,
-      profileImg,
-      userId,
-    };
-    const previousUserList = socket['userList'];
-
-    // 사용자가 이미 다른 방에 참가한 경우
-    if (previousUserList) {
-      // 이전 방에서 사용자를 나가게 처리
-      this.chatsService.leaveRoom(socket, this.server);
-    }
-
-    // 현재 방에 사용자를 참가하게 처리
-    this.chatsService.joinRoom(socket, this.server, {
-      nickname,
-      roomId,
-      profileImg,
-      userId,
-    });
-
-    socket['userList'] = userList;
-  }
-
-  // 유저가 방을 삭제할때
-  @SubscribeMessage('remove_room')
-  async handleRemoveRoom(
-    @ConnectedSocket() socket: Socket,
-    @MessageBody() { roomId }: IuserInfo
-  ): Promise<void> {
-    await this.chatsService.removeRoom(socket, this.server, roomId);
-  }
-
-  //handleDisconnect 와 코드를 통합해서 삭제예정(주석처리)
-  // // 유저가 방을 떠날때
-  // @SubscribeMessage('leave_room')
-  // async handleLeaveRoom(
-  //   @ConnectedSocket() socket: Socket,
-  //   @MessageBody() { roomId }: IuserInfo
-  // ): Promise<void> {
-  //   socket.leave(String(roomId));
-  //   await this.chatsService.leaveRoom(socket, this.server, roomId);
-  // }
-
-  // WebSocketGateway가 초기화될 때 실행되는 메소드
-  // WebSocketGateway가 초기화되면 로그를 출력합니다.
-  afterInit() {
-    this.logger.log('init');
   }
 } // 끝

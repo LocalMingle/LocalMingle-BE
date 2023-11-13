@@ -18,7 +18,6 @@ export class AuthService {
   ) {}
 
   async login({ email, password, res }: IAuthServiceLogin): Promise<{
-    // 리팩토링 시 res 빼도 작동하는지 테스트
     accessToken: string;
     refreshToken: string;
     userId: number;
@@ -76,7 +75,7 @@ export class AuthService {
     return refreshToken;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<string> {
+  refreshAccessToken(refreshToken: string): string {
     // 리프레시 토큰의 유효성을 검증
     const decodedToken = this.jwtService.verify(refreshToken, {
       secret: process.env.JWT_REFRESH_KEY,
@@ -85,7 +84,7 @@ export class AuthService {
     // 리프레시 토큰이 유효하다면 새로운 액세스 토큰을 발급
     const userId = decodedToken.sub; // 추출된 사용자 ID
 
-    const newAccessToken = await this.getAccessToken({
+    const newAccessToken = this.getAccessToken({
       user: { userId }, // 사용자 ID를 전달
     });
     return newAccessToken;
@@ -114,7 +113,6 @@ export class AuthService {
 
     // 2-1. 사용자가 삭제되지 않았는지 확인 (deletedAt가 null이어야 함)
     if (user.deletedAt !== null) {
-      // res.redirect('http://localhost:5000/');
       throw new UnauthorizedException('사용자가 삭제되었습니다.');
     }
 

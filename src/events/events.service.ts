@@ -50,7 +50,7 @@ export class EventsService {
     } else {
       const events = await this.prisma.event.findMany({
         take: 4,
-        skip: page, 
+        skip: page,
         where: {
           isDeleted: false,
         },
