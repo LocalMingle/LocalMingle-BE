@@ -95,7 +95,7 @@ export class EventsController {
     const { GuestEvents, HostEvents, ...rest } = event;
 
     // 조회수 로그 생성
-    await this.eventsService.createViewLog(eventId);
+    await this.eventsService.createViewLog(eventId, userId);
 
     return {
       event: rest,

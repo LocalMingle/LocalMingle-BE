@@ -10,10 +10,15 @@ import { SearchesModule } from './searches/searches.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { NotificationsModule } from './notifications/notifications.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ChatsModule } from './chats/chats.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGO_URL),
+    ChatsModule,
     PrismaModule,
     UsersModule,
     AuthModule,
@@ -22,6 +27,11 @@ import { NotificationsModule } from './notifications/notifications.module';
     DataModule,
     SearchesModule,
     NotificationsModule,
+    CacheModule.register({
+      isGlobal: true,
+      til: 60,
+      max: 100,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
