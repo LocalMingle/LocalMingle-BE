@@ -107,13 +107,15 @@ export class ChatsGateway
       );
 
       // MongoDB의 socketModel에 사용자 정보 저장
-      await this.socketModel.create({
+      const userInfo = await this.socketModel.create({
         socketId: socket.id,
         nickname: payload.nickname,
         roomId: payload.roomId,
         profileImg: payload.profileImg,
         userId: payload.userId,
       });
+      // sockets db에 저장된 유저정보를 userList배열에 추가
+      this.userList.push(userInfo);
 
       // 이전 채팅 내용을 불러옵니다.
       const chatHistory = await this.getChatHistory(payload.roomId);
@@ -127,6 +129,7 @@ export class ChatsGateway
 
       // 이전 채팅 내용과 함께 사용자 정보를 클라이언트에게 전송합니다.
       socket.emit('chat_history', chatHistory);
+      // this.server.to(String(payload.roomId)).emit('chat_history', chatHistory);
       // 방에 있는 모든 사용자에게 userList 전송
       this.server.to(String(payload.roomId)).emit('user_connected', payload);
       // console.log('유저리스트 콘솔', this.userList);
@@ -174,7 +177,6 @@ export class ChatsGateway
       nickname: messageData.nickname,
       profileImg: messageData.profileImg,
       roomId: messageData.roomId,
-      time: messageData.time,
       chat: messageData.message, // 수정: messageData.message를 사용하여 채팅 저장
     });
 
