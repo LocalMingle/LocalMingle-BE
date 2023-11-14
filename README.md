@@ -1,10 +1,40 @@
-# Local Mingle
-로컬밍글은 사용자의 접속 위치를 기반으로 일상의 소모임을 만들 수 있는 SNS 형식의 커뮤니티 서비스 입니다.<br>이 프로젝트의 시작은 사회가 바빠짐에 따라 이웃에 누가 사는지 모르는 지금의 사회에서 취미나 일상의 공유 등 소모임을 통해 잊쳐져 가는 정을 회복했으면 하는 바람으로 시작된 프로젝트 입니다.
-<br>
-<br>
-## 👥 참가한 사람들
+# **🏡 Local Mingle - FE**
+![로컬밍글 브로셔](https://github.com/LocalMingle/LocalMingle-FE/assets/93027502/4a4fd6d4-cded-4ef3-af10-0f84fa26785e)
 
-![Project Logo](images/catheeyong.jpg)
+> 로컬밍글은 소셜 커뮤니티 서비스입니다.</br>
+쉽고 빠르게 함께 할 수 있는 활동을 만들고 참여해보세요!
+</br>
+
+<table width="80%;">
+  <tr align="center">
+    <td><strong>구분</strong></td>
+    <td><strong>링크</strong></td>
+    <td><strong>구분</strong></td>
+    <td><strong>링크</strong></td>
+  </tr>
+  <tr align="center">
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/93027502/a662c8fb-5b51-4a81-b344-21eb205021f7" alt="로컬밍글 아이콘" style="width: 25px;"></td>
+    <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://localmingle.store/">Local Mingle</a></td>
+    <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png" alt="노션 아이콘" style="width: 20px;"></td>
+<td><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.notion.so/totobon6125/Local-Mingle-0ceb08bc63674e28a3ee8d458ba2baaf">브로슈어</a></td>
+  </tr>
+  <tr align="center">
+    <td><img src="https://user-images.githubusercontent.com/389021/165723723-c93929a5-01d9-49e1-907b-43669d8089e6.png" alt="리액트 아이콘" style="width: 25px;"></td>
+    <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://github.com/LocalMingle/LocalMingle-FE">FE Github</a></td>
+    <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/1024px-Notion-logo.svg.png" alt="노션 아이콘" style="width: 20px;"></td>
+    <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.notion.so/totobon6125/6-Local-Mingle-2f816b5d6b494b69ad27e113e1a48a9f">팀 SA</a></td>
+  </tr>
+  <tr align="center">
+    <td><img src="https://static-00.iconduck.com/assets.00/node-js-icon-454x512-nztofx17.png" alt="노드js 아이콘" style="width: 20px;"></td>
+    <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://github.com/LocalMingle/LocalMingle-BE">BE Github</a></td>
+    <td><img src="https://cdn-icons-png.flaticon.com/512/5968/5968705.png" alt="피그마 아이콘" style="width: 20px;"></td>
+    <td><a target="_blank" rel="noopener noreferrer nofollow" href="https://www.figma.com/file/Dq3pVmdUxnjMHvXaMZOUr8/%ED%95%AD%ED%95%B499-%EC%9E%91%EC%97%85?type=design&node-id=0-1&mode=design&t=LUqRgNyDtMIs1wkf-0">Figma</a></td>
+  </tr>
+</table>
+</br>
+<br>
+
+## 👥 참가한 사람들
 
 <table>
   <tr>
@@ -65,6 +95,38 @@
 </tr>
 </table>
 <br>
+
+## **🎈 주요기능 소개**
+
+<table>
+  <tr align="center">
+    <td><strong>소셜 로그인</strong></td>
+    <td><strong>다국어</strong></td>
+    <td><strong>채팅방</strong></td>
+  </tr>
+   <tr align="center">
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/e7925ad3-c01b-4a92-b55c-85af5c0ee943" alt="소셜 로그인" style="height:500px"/></td>
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/5e4219ef-f591-424f-8c9d-3a71566f4510" alt="다국어" style="height:500px"/></td>
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/f9855b2f-5e4e-468b-a14b-56136a1e7a08" alt="채팅방" style="height:500px"/></td>
+  </tr>
+</table>
+
+</br>
+
+<table>
+  <tr align="center">
+    <td><strong>게시글 검색</strong></td>
+    <td><strong>게시글 필터링</strong></td>
+    <td><strong>인피니티 스크롤</strong></td>
+  </tr>
+   <tr align="center">
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/e8eb91f1-340d-4b19-a32c-4cce8ff83fee" alt="게시글 검색" style="height:500px"/></td>
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/92aa2dc2-0865-4b98-9a7c-fdd70af87bb1" alt="게시글 필터링" style="height:500px"/></td>
+    <td><img src="https://github.com/LocalMingle/LocalMingle-FE/assets/138233242/66e20e95-5784-4d25-9a4a-3766a227d907" alt="인피니티 스크롤" style="height:500px"/></td>
+  </tr>
+</table>
+
+</br>
 
 ## 🔎 주요 기능
 
