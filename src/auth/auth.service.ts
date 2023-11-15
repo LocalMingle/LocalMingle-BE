@@ -60,7 +60,7 @@ export class AuthService {
   getAccessToken({ user }): string {
     const accessToken = this.jwtService.sign(
       { sub: user.userId },
-      { secret: process.env.JWT_ACCESS_KEY, expiresIn: '36000s' }
+      { secret: process.env.JWT_ACCESS_KEY, expiresIn: '2h' }
     );
 
     return accessToken;
