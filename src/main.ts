@@ -28,8 +28,8 @@ async function bootstrap() {
   // CORS 정책 test2
   app.enableCors({
     origin: [
-      'http://localhost:5173',
-      'https://d2r603zvpf912o.cloudfront.net',
+      'http://localhost:51733',
+      'https://d2r603zvpf912o.cloudfront.nett',
       'https://totobon.store',
       'https://local-mingle-fe.vercel.app',
       'https://d2k8kob2tp4v96.cloudfront.net',
