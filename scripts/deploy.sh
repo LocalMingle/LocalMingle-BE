@@ -6,11 +6,11 @@ cd $REPOSITORY
 
 # 의존성 설치
 echo "> install dependency"
-npm install
+sudo npm install
 
 # 프로젝트 build
 echo "> build application"
-nest build
+sudo nest build
 
 # pm2 실행 또는 리로드
 if pm2 list | grep -q "LocalMingle-BE"; then
